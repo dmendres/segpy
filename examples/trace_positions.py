@@ -27,6 +27,24 @@ class DimensionalityError(Exception):
     pass
 
 
+def sample_TracePositions(segyFileName, skipCount = 100):
+    """Extract sparse trace positions (every skipCount traces in x and y
+       from a 3D SEG Y file to a Numpy NPY file.
+
+    Args:
+        segy_filename: Filename of a SEG Y file.
+        skipCount: number of traces to skip between printed samples, also the reduction factor in number of traces printed
+    """
+    with open(segyFileName, 'rb') as segy_file:
+        segy_reader = create_reader(segy_file)
+        for trace_index in segy_reader.trace_indexes():
+            trace_header = segy_reader.trace_header(trace_index)
+            trace_position = (trace_header.cdp_x,
+                              trace_header.cdp_y)
+            if (trace_index % skipCount == 0) :
+                print(trace_index, trace_position, trace_header.num_samples, "samples at ", trace_header.sample_interval/1000.0, "ms per sample")
+                
+
 def extract_trace_positions(segy_filename):
     """Extract a timeslice from a 3D SEG Y file to a Numpy NPY file.
 
